@@ -15,13 +15,19 @@ model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=
 x_train = np.random.rand(100, 4)
 y_train = np.random.randint(3, size=100)
 
-# Train the model and capture the weights
+# Train the model and capture the weights and activations
 class WeightHistory(tf.keras.callbacks.Callback):
+    def __init__(self):
+        super().__init__()
+        self.history = []
+
     def on_epoch_end(self, epoch, logs=None):
         weights = [layer.get_weights() for layer in self.model.layers]
         weights_as_lists = [[w.tolist() for w in layer_weights] for layer_weights in weights]
-        with open(f'weights_epoch_{epoch+1}.json', 'w') as f:
-            json.dump(weights_as_lists, f)
+        activations = self.model.predict(x_train[:1]).tolist()  # Get activations for the first input
+        self.history.append({'epoch': epoch + 1, 'weights': weights_as_lists, 'activations': activations})
+        with open('training_history.json', 'w') as f:
+            json.dump(self.history, f)
 
 history = WeightHistory()
 model.fit(x_train, y_train, epochs=5, callbacks=[history])
