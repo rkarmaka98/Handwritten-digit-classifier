@@ -1,33 +1,30 @@
 import tensorflow as tf
-import numpy as np
-import json
+from tensorflow.keras.datasets import mnist
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Flatten, Dense
 
-# Create a simple neural network
-model = tf.keras.Sequential([
-    tf.keras.layers.Dense(10, input_shape=(4,), activation='relu'),
-    tf.keras.layers.Dense(3, activation='softmax')
+# Load and preprocess the data
+(x_train, y_train), (x_test, y_test) = mnist.load_data()
+x_train, x_test = x_train / 255.0, x_test / 255.0
+
+# Build the model
+model = Sequential([
+    Flatten(input_shape=(28, 28)),
+    Dense(128, activation='relu'),
+    Dense(10, activation='softmax')
 ])
 
 # Compile the model
-model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
+model.compile(optimizer='adam',
+              loss='sparse_categorical_crossentropy',
+              metrics=['accuracy'])
 
-# Dummy data
-x_train = np.random.rand(100, 4)
-y_train = np.random.randint(3, size=100)
+# Train the model
+model.fit(x_train, y_train, epochs=5)
 
-# Train the model and capture the weights and activations
-class WeightHistory(tf.keras.callbacks.Callback):
-    def __init__(self):
-        super().__init__()
-        self.history = []
+# Evaluate the model
+test_loss, test_acc = model.evaluate(x_test, y_test)
+print(f'Test accuracy: {test_acc}')
 
-    def on_epoch_end(self, epoch, logs=None):
-        weights = [layer.get_weights() for layer in self.model.layers]
-        weights_as_lists = [[w.tolist() for w in layer_weights] for layer_weights in weights]
-        activations = self.model.predict(x_train[:1]).tolist()  # Get activations for the first input
-        self.history.append({'epoch': epoch + 1, 'weights': weights_as_lists, 'activations': activations})
-        with open('training_history.json', 'w') as f:
-            json.dump(self.history, f)
-
-history = WeightHistory()
-model.fit(x_train, y_train, epochs=5, callbacks=[history])
+# Save the model
+model.save('digit_classifier_model.h5')

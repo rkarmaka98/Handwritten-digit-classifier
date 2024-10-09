@@ -1,13 +1,20 @@
-<!DOCTYPE html>
+<<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Neural Network Visualization</title>
+    <title>Digit Classifier</title>
+    <style>
+        canvas {
+            border: 1px solid black;
+        }
+    </style>
 </head>
 <body>
-    <h1>Neural Network Visualization</h1>
-    <canvas id="nnCanvas" width="800" height="600"></canvas>
+    <h1>Draw a Digit</h1>
+    <canvas id="canvas" width="280" height="280"></canvas>
+    <button id="classifyButton">Classify</button>
+    <p id="result"></p>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
