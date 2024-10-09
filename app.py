@@ -6,7 +6,7 @@ from PIL import Image
 import io
 
 app = Flask(__name__)
-model = load_model('digit_classifier_model.h5')  # Load your pre-trained model
+model = load_model('digit_classifier_model.keras')  # Load your pre-trained model
 
 @app.route('/')
 def index():
