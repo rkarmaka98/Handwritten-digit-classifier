@@ -1,23 +1,121 @@
-<<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Digit Classifier</title>
     <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+        h1 {
+            color: #333;
+        }
         canvas {
-            border: 1px solid black;
+            border: 2px solid #333;
+            border-radius: 8px;
+            background-color: #fff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        button {
+            margin: 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+            color: #fff;
+            background-color: #007bff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        p {
+            font-size: 18px;
+            color: #333;
         }
     </style>
 </head>
 <body>
-    <h1>Draw a Digit</h1>
+    <h1>Draw a digit!</h1>
     <canvas id="canvas" width="280" height="280"></canvas>
-    <button id="classifyButton">Classify</button>
-    <button id="clearButton">Clear</button>
+    <br>
+    <button onclick="saveDrawing()">Save Drawing</button>
+    <button onclick="classifyDrawing()">Classify Drawing</button>
+    <button onclick="clearCanvas()">Clear Canvas</button>
     <p id="result"></p>
-    <div id="activations"></div>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="{{ url_for('static', filename='script.js') }}"></script>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        let drawing = false;
+
+        // Fill the canvas with a white background
+        ctx.fillStyle = 'white';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        canvas.addEventListener('mousedown', () => {
+            drawing = true;
+            ctx.beginPath(); // Start a new path
+            ctx.moveTo(event.clientX - canvas.offsetLeft, event.clientY - canvas.offsetTop)
+        });
+        canvas.addEventListener('mouseup', () => drawing = false);
+        canvas.addEventListener('mousemove', draw);
+
+        function draw(event) {
+            if (!drawing) return;
+            ctx.lineWidth = 5;
+            ctx.lineCap = 'round';
+            ctx.strokeStyle = 'black';
+
+            ctx.lineTo(event.clientX - canvas.offsetLeft, event.clientY - canvas.offsetTop);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(event.clientX - canvas.offsetLeft, event.clientY - canvas.offsetTop);
+        }
+
+        function saveDrawing() {
+            const imageData = canvas.toDataURL('image/png');
+            const xhr = new XMLHttpRequest();
+            xhr.open('POST', '/save', true);
+            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+            xhr.send('imageData=' + encodeURIComponent(imageData));
+            xhr.onload = function() {
+                if (xhr.status === 200) {
+                    alert('Image saved successfully!');
+                }
+            };
+        }
+
+        function classifyDrawing() {
+            const imageData = canvas.toDataURL('image/png');
+            const xhr = new XMLHttpRequest();
+            xhr.open('POST', '/classify', true);
+            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+            xhr.send('imageData=' + encodeURIComponent(imageData));
+            xhr.onload = function() {
+                if (xhr.status === 200) {
+                    const result = JSON.parse(xhr.responseText);
+                    document.getElementById('result').innerText = 'Predicted Digit: ' + result.digit;
+                }
+            };
+        }
+
+        function clearCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = 'white';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.beginPath();
+            document.getElementById('result').innerText = '';
+        }
+    </script>
 </body>
 </html>
