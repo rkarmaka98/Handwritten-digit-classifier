@@ -21,7 +21,8 @@ def save():
         data = ''.join(data)
     data = data.split(',')
     image_data = base64.b64decode(data[1])
-    image = Image.open(io.BytesIO(image_data))
+    image = Image.open(io.BytesIO(image_data)).convert('L')
+    image = ImageOps.invert(image)
     image.save('drawing.png')
     return 'Image saved successfully!'
 
@@ -33,6 +34,7 @@ def classify():
     data = data.split(',')
     image_data = base64.b64decode(data[1])
     image = Image.open(io.BytesIO(image_data)).convert('L')
+    image=ImageOps.invert(image)
     # Resize the image to 28x28 pixels while maintaining aspect ratio
     image = ImageOps.fit(image, (56, 56), method=Image.LANCZOS)
     image.show()
