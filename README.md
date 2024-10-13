@@ -39,14 +39,17 @@ pip install -r requirements.txt
 1. **Training the Model**:
    Run the Python script to train the model:
    ```bash
-   python train.py
+   python model.py
    ```
 
 2. **Saving the Model**:
    The trained model is saved as `digit_classifier_model.keras` for later use.
 
 3. **Inference**:
-   You can use the saved model to make predictions on new handwritten digit images.
+   You can use the saved model to make predictions on new handwritten digit images. Then run the main app.
+   ```
+   python app.py
+   ```
 
 ## Code Walkthrough
 
