@@ -2,6 +2,11 @@
 
 This repository contains code for training a convolutional neural network (CNN) that classifies handwritten digits from the MNIST dataset. The model is implemented using TensorFlow and Keras, and is designed to recognize digits from 0 to 9 with high accuracy.
 
+
+
+https://github.com/user-attachments/assets/fca438b9-1fd8-463f-a18e-d0a619d36e99
+
+
 ## Overview
 
 The MNIST dataset is a classic dataset of handwritten digits that is widely used for training and testing image processing systems. In this repository, we build a more complex CNN model that can classify these digits. The model uses multiple convolutional layers, max pooling layers, fully connected layers, and dropout layers to achieve better accuracy.
@@ -9,6 +14,7 @@ The MNIST dataset is a classic dataset of handwritten digits that is widely used
 <img width="1261" alt="image" src="https://github.com/user-attachments/assets/a6e61827-9d5c-4ba6-a0ab-244dcb6d3098">
 
 ## Features
+
 
 - **Input Size**: The model accepts grayscale images of size 28x28.
 - **Layers**: The model includes several convolutional layers, max pooling layers, fully connected layers, and dropout layers to minimize overfitting.
