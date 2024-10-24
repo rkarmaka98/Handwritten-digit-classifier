@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, jsonify
-from PIL import Image, ImageOps
+from PIL import Image, ImageOps, ImageFilter
 import base64
 import io
 import numpy as np
@@ -87,6 +87,7 @@ def visualize():
     
     # Convert activations to base64 images
     activation_images = []
+    upscale_size = (280, 280)
     for layer_index, activation in enumerate(activations):
         num_filters = activation.shape[-1]
         height, width = activation.shape[1:3]
@@ -108,8 +109,11 @@ def visualize():
         
         # Convert the grid to an image
         grid_image = Image.fromarray(grid)
+
+        upscaled_image=grid_image.resize(upscale_size, Image.LANCZOS)
+        sharpened_image = upscaled_image.filter(ImageFilter.SHARPEN)
         buffered = io.BytesIO()
-        grid_image.save(buffered, format="PNG")
+        sharpened_image.save(buffered, format="PNG")
         grid_image_base64 = base64.b64encode(buffered.getvalue()).decode('utf-8')
         activation_images.append(grid_image_base64)
     
